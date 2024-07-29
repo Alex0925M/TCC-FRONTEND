@@ -1,6 +1,6 @@
 import { SidebarItem } from "./SidebarItem";
 import { SidebarSection } from "./SidebarSection";
-import { Home, Shield } from 'lucide-react';
+import { Home, Shield, User } from 'lucide-react';
 
 export function Sidebar() {
     return (
@@ -16,6 +16,11 @@ export function Sidebar() {
                     text='Administrador'
                     to='/admin-panel'
                 />
+                <SidebarItem
+                    icon={User}
+                    text='Atendimento'
+                    to="/registration-panel"
+                />    
             </SidebarSection>
         </nav>
     )

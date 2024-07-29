@@ -9,6 +9,7 @@ import { ClientsInfosPage } from "./pages/Clients/ClientsInfosPage";
 import { CompaniesInfosPage } from "./pages/Companies/CompaniesInfosPage";
 import { EmployeesInfosPage } from "./pages/Employees/EmployeesInfosPage";
 import { BrowserRouter, Route, Routes } from "react-router-dom";
+import { RegistrationPanelPage } from "./pages/RegistrationPanelPage";
 
 export function AppRoutes() {
     return (
@@ -26,6 +27,7 @@ export function AppRoutes() {
                     <Route path='/register-company' element={<CompanyFormPage />}/>
                     <Route path='/infos-companies' element={<CompaniesInfosPage />} />
                     <Route path='/infos-company/edit/:id' element={<CompanyFormPage />}/>
+                    <Route path='/registration-panel' element={<RegistrationPanelPage />}/>
                 </Route>
                 
                 <Route path='/login' element={<LoginPage />} />

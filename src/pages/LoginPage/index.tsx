@@ -90,7 +90,7 @@ export function LoginPage() {
             <div className='absolute bg-blue-background h-screen w-[50%] right-0 -z-40' />
             <div className='absolute text-center bottom-1 text-white'>
                 <p>
-                    Desenvolvido por{' '}
+                    Desenvolvido por{'Alex Dos Santos Moreira'}
                     <span className='underline text-blue-500 hover:text-blue-600 cursor-pointer'>
                         Logic Flare
                     </span>

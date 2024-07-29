@@ -14,11 +14,12 @@ export function Infobar() {
                 />
 
                 <p className='text-md truncate max-w-[200px] md:text-lg mr-4'>
-                    Rubens da Cunha Junior
+                    Alex Moreira
                 </p>
             </div>
 
-            <div className='flex items-center justify-center gap-4 md:gap-12 select-none'>
+            <div className='flex items-center justify-center gap-4 md:gap-19 select-none'>
+                 <p className='hidden lg:inline-flex'>Notificações</p>
                 <Bell className='w-[30px] h-[30px] hover:cursor-pointer' />
                 
                 <div className='flex items-center gap-2 hover:cursor-pointer'>
