@@ -2,7 +2,7 @@ import { Title } from '../../components/Title';
 import { Button } from '../../components/Button';
 import { useNavigate } from 'react-router';
 import { PageContainer } from '../../components/PageContainer';
-import { Briefcase, Building2, Plus, Users } from 'lucide-react';
+import { Briefcase, Plus} from 'lucide-react';
 
 export function RegistrationPanelPage(){
     const navigate = useNavigate();
