@@ -3,7 +3,7 @@ import { z } from 'zod';
 import { Input } from '../../components/Input';
 import { Button } from '../../components/Button';
 import { useForm } from 'react-hook-form';
-import { useNavigate } from 'react-router';
+import { useNavigate } from 'react-router-dom';
 import { zodResolver } from '@hookform/resolvers/zod';
 
 export function LoginPage() {
@@ -35,13 +35,46 @@ export function LoginPage() {
     });
     const navigate = useNavigate();
 
-    async function onSubmit(event: any) {
+    async function onSubmit(data: { email: string; password: string }) {
+        console.log('Dados enviados:', data); // Verifica os dados enviados
+    
         try {
-            /**@todo Implementar login */
-            console.log('Enviado! ', event);
-            navigate('/');
+            const response = await fetch('http://localhost:8080/auth/login', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    username: data.email, // Ajuste para corresponder ao campo esperado pela API
+                    password: data.password,
+                }),
+            });
+    
+            console.log('Resposta da API:', response); // Verifica a resposta da API
+    
+            if (!response.ok) {
+                const errorData = await response.json();
+                console.error('Erro na resposta:', errorData);
+                throw new Error(errorData.message || 'Falha na autenticação.');
+            }
+    
+            const responseData = await response.json();
+            console.log('Dados da resposta:', responseData); // Verifica os dados da resposta
+    
+            const token = responseData.token;
+            console.log('Token recebido:', token); // Verifica o token
+    
+            if (token) {
+                localStorage.setItem('authToken', token);
+                console.log('Token armazenado com sucesso');
+                navigate('/');
+            } else {
+                console.error('Token não encontrado na resposta');
+            }
+    
         } catch (error) {
-            throw new Error(`${error}`);
+            console.error('Erro no login:', error);
+            // Exiba uma mensagem de erro ao usuário, se desejar
         }
     }
 

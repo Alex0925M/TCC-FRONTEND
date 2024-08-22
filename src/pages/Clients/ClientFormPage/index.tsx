@@ -15,6 +15,7 @@ import { useNavigate, useParams } from 'react-router';
 import { CompanyDto, CompanyEntity } from '../../../constants/Companies';
 import { ClientDto, createClientFormSchema } from '../../../constants/Clients';
 import AntdSelect from '../../../components/AntDesign/AntdSelect';
+import { AxiosError } from 'axios';
 
 const perPage = [
     { value: 6, label: '6' },
@@ -83,7 +84,7 @@ export function ClientFormPage() {
 
     async function getClientData(id: string | undefined) {
         try {
-            const response = await http.get(`clients/${id}`);
+            const response = await http.get(`authenticated/clients/${id}`);
             const client = response.data;
             setDefaultInputValues({
                 cpf: client.cpf,
@@ -132,30 +133,33 @@ export function ClientFormPage() {
                 name: event.name,
             };
             console.log('Enviado!: ', client);
-
-            const response =
-                id !== undefined
-                    ? await http.put(`clients`, { id: id, ...client })
-                    : await http.post('clients', client);
-
+    
+            const response = id
+                ? await http.put(`authenticated/clients/${id}`, client)
+                : await http.post('authenticated/clients', client);
+    
             const registeredClient: ClientDto = response.data;
-
+    
             if (companyRelation.length > 0) {
-                const responseUpdate = await http.put(`clients`, {
-                    id: registeredClient.id,
+                await http.put(`authenticated/clients/${registeredClient.id}/companies`, {
                     company: companyRelation,
                 });
-                console.log(
-                    'Companies added successfully.',
-                    responseUpdate.data
-                );
+                console.log('Companies added successfully.');
             }
-
+    
             navigate(-1);
         } catch (error) {
-            console.error(error);
+            if (error instanceof AxiosError) {
+                // AxiosError é uma forma específica de erro HTTP
+                console.error('Erro ao enviar dados: ', error.response?.data || error.message);
+            } else if (error instanceof Error) {
+                console.error('Erro ao enviar dados: ', error.message);
+            } else {
+                console.error('Erro desconhecido: ', error);
+            }
         }
     }
+    
 
     useEffect(() => {
         if (id !== undefined) {

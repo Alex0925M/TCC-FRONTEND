@@ -1,3 +1,4 @@
+import { BrowserRouter, Navigate, Route, Routes } from "react-router-dom";
 import { HomePage } from "./pages/HomePage";
 import { LoginPage } from './pages/LoginPage';
 import { LayoutPage } from "./pages/LayoutPage";
@@ -8,14 +9,14 @@ import { EmployeeFormPage } from "./pages/Employees/EmployeeFormPage";
 import { ClientsInfosPage } from "./pages/Clients/ClientsInfosPage";
 import { CompaniesInfosPage } from "./pages/Companies/CompaniesInfosPage";
 import { EmployeesInfosPage } from "./pages/Employees/EmployeesInfosPage";
-import { BrowserRouter, Route, Routes } from "react-router-dom";
 import { RegistrationPanelPage } from "./pages/RegistrationPanelPage";
 
 export function AppRoutes() {
     return (
         <BrowserRouter>
             <Routes>
-                <Route path='/' element={<LayoutPage />}>
+                <Route path='/login' element={<LoginPage />} />
+                <Route path='/' element={<PrivateRoute />}>
                     <Route index element={<HomePage />} />
                     <Route path='/admin-panel' element={<AdminPanelPage />} />
                     <Route path='/register-client' element={<ClientFormPage />}/>
@@ -29,9 +30,16 @@ export function AppRoutes() {
                     <Route path='/infos-company/edit/:id' element={<CompanyFormPage />}/>
                     <Route path='/registration-panel' element={<RegistrationPanelPage />}/>
                 </Route>
-                
-                <Route path='/login' element={<LoginPage />} />
             </Routes>
         </BrowserRouter>
-    )
+    );
+}
+
+// Componente de rota privada
+function PrivateRoute() {
+    const token = localStorage.getItem('authToken');
+    if (!token) {
+        return <Navigate to="/login" />;
+    }
+    return <LayoutPage />;
 }
