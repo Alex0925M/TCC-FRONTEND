@@ -19,15 +19,7 @@ import {
 
 export function CompanyFormPage() {
     const [segments, setSegments] = useState<CompanySegments[]>([]);
-    const [qualifications, setQualifications] = useState<
-        CompanyQualifications[]
-    >([]);
-    const [defaultInputValues, setDefaultInputValues] = useState({
-        companyName: '',
-        cnpj: '',
-        segment: '',
-        qualifications: '',
-    });
+    const [qualifications, setQualifications] = useState<CompanyQualifications[]>([]);
     const navigate = useNavigate();
     const { id } = useParams();
     const {
@@ -38,86 +30,79 @@ export function CompanyFormPage() {
     } = useForm({
         resolver: zodResolver(createCompanyFormSchema),
         defaultValues: {
-            companyName: defaultInputValues.companyName,
-            cnpj: defaultInputValues.cnpj,
-            segment: defaultInputValues.segment,
-            qualifications: defaultInputValues.qualifications,
+            companyName: '',
+            cnpj: '',
+            segment: '',
+            qualifications: '',
         },
     });
 
+    // Fetch enums for segments and qualifications
     async function getEnumsOptions() {
         try {
-            const [segmentsEnum, qualificationsEnum] = await Promise.all([
-                http.get('/company/segments'),
-                http.get('/company/qualifications'),
+            const [segmentsResponse, qualificationsResponse] = await Promise.all([
+                http.get('authenticated/company/segments'),
+                http.get('authenticated/company/qualifications'),
             ]);
-            setSegments(segmentsEnum.data);
-            setQualifications(qualificationsEnum.data);
+            setSegments(segmentsResponse.data);
+            setQualifications(qualificationsResponse.data);
         } catch (error) {
-            console.error(error);
+            console.error('Erro ao buscar opções:', error);
         }
     }
 
+    // Fetch company data if editing an existing company
     async function getCompanyData(id: string | undefined) {
+        if (!id) return;
         try {
-            const response = await http.get(`company/${id}`);
+            const response = await http.get(`authenticated/company/${id}`);
             const company = response.data;
-            setDefaultInputValues({
-                companyName: company.companyName,
-                cnpj: company.cnpj,
-                segment: company.segment,
-                qualifications: company.qualifications,
-            });
-
             reset({
                 companyName: company.companyName,
                 cnpj: company.cnpj,
-                segment: company.segment,
-                qualifications: company.qualifications,
+                segment: company.segment || '',
+                qualifications: company.qualifications || '',
             });
         } catch (error) {
-            console.error(error);
+            console.error('Erro ao buscar dados da empresa:', error);
         }
     }
 
-    async function onSubmit(event: any) {
-        console.log('Enviado!: ', event);
+    // Handle form submission
+    async function onSubmit(data: any) {
         try {
             const company: CompanyDto = {
-                companyName: event.companyName,
-                cnpj: event.cnpj,
-                segment: event.segment,
-                qualifications: event.qualifications,
+                companyName: data.companyName,
+                cnpj: data.cnpj,
+                segment: data.segment,
+                qualifications: data.qualifications,
                 active: true,
             };
 
-            id !== undefined
-                ? await http.put('company', { id: id, ...company })
-                : await http.post('company', company);
+            if (id) {
+                await http.put(`authenticated/company/${id}`, company);
+            } else {
+                await http.post('authenticated/company', company);
+            }
 
             navigate(-1);
         } catch (error) {
-            console.error(error);
+            console.error('Erro ao enviar dados:', error);
         }
     }
 
     useEffect(() => {
-        if (id !== undefined) {
+        getEnumsOptions();
+        if (id) {
             getCompanyData(id);
         }
-        getEnumsOptions();
-    }, []);
+    }, [id]);
 
     return (
         <PageContainer>
-            <Title>
-                {id ? 'Atualizar dados da Empresa' : 'Cadastrar Empresa'}
-            </Title>
+            <Title>{id ? 'Atualizar dados da Empresa' : 'Cadastrar Empresa'}</Title>
 
-            <form
-                onSubmit={handleSubmit(onSubmit)}
-                className='flex flex-col justify-center gap-16'
-            >
+            <form onSubmit={handleSubmit(onSubmit)} className='flex flex-col justify-center gap-16'>
                 <FormContainer title='Dados da empresa'>
                     <FormBox>
                         <Input
@@ -147,12 +132,11 @@ export function CompanyFormPage() {
                             <option disabled value=''>
                                 Selecione...
                             </option>
-                            {segments &&
-                                segments.map((segment, index) => (
-                                    <option key={index} value={segment}>
-                                        {segment}
-                                    </option>
-                                ))}
+                            {segments.map((segment, index) => (
+                                <option key={index} value={segment}>
+                                    {segment}
+                                </option>
+                            ))}
                         </Select>
 
                         <Select
@@ -164,12 +148,11 @@ export function CompanyFormPage() {
                             <option disabled value=''>
                                 Selecione...
                             </option>
-                            {qualifications &&
-                                qualifications.map((qualification, index) => (
-                                    <option key={index} value={qualification}>
-                                        {qualification}
-                                    </option>
-                                ))}
+                            {qualifications.map((qualification, index) => (
+                                <option key={index} value={qualification}>
+                                    {qualification}
+                                </option>
+                            ))}
                         </Select>
                     </FormBox>
                 </FormContainer>

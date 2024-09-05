@@ -10,6 +10,7 @@ import { ClientsInfosPage } from "./pages/Clients/ClientsInfosPage";
 import { CompaniesInfosPage } from "./pages/Companies/CompaniesInfosPage";
 import { EmployeesInfosPage } from "./pages/Employees/EmployeesInfosPage";
 import { RegistrationPanelPage } from "./pages/RegistrationPanelPage";
+import { RegistrationFormPage } from "./pages/RegistrationPanelPage/RegsistrationFormPage";
 
 export function AppRoutes() {
     return (
@@ -29,6 +30,7 @@ export function AppRoutes() {
                     <Route path='/infos-companies' element={<CompaniesInfosPage />} />
                     <Route path='/infos-company/edit/:id' element={<CompanyFormPage />}/>
                     <Route path='/registration-panel' element={<RegistrationPanelPage />}/>
+                    <Route path='/register-service' element={<RegistrationFormPage />}/>
                 </Route>
             </Routes>
         </BrowserRouter>

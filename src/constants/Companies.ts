@@ -13,6 +13,7 @@ export type CompanyEntity = {
 export enum CompanySegments {
     Administrativo = 'Administrativo',
     Contabilidade = 'Contabilidade',
+    Tecnlogoia = 'Tecnologia',
 }
 
 export enum CompanyQualifications {

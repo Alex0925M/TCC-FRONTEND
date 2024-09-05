@@ -55,7 +55,7 @@ export function CompaniesInfosPage() {
 
     async function getAllCompanies() {
         try {
-            const response = await http.get('company');
+            const response = await http.get('authenticated/company');
             setAllCompanies(response.data);
         } catch (error) {
             console.error(error);
@@ -155,7 +155,7 @@ function CompanyData({ data }: { data: DataType[] }) {
 
     async function handleDelete(id: string) {
         try {
-            await http.delete(`company/${id}`);
+            await http.delete(`authenticated/company/${id}`);
             message.success('Empresa removida com sucesso!');
         } catch (error) {
             console.error(error);
@@ -165,7 +165,7 @@ function CompanyData({ data }: { data: DataType[] }) {
 
     async function handleStatus(id: string) {
         try {
-            await http.put('company', {
+            await http.put('authenticated/company', {
                 id: id,
                 active: true,
             });

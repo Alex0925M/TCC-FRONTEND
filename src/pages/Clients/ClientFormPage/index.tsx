@@ -67,7 +67,7 @@ export function ClientFormPage() {
 
     async function getAllCompanies() {
         try {
-            const response = await http.get<CompanyEntity[]>('company');
+            const response = await http.get<CompanyEntity[]>('authenticated/company');
             const companies: CompanyDto[] = response.data.map(
                 (company: CompanyEntity) => new CompanyDto(company)
             );
@@ -141,7 +141,7 @@ export function ClientFormPage() {
             const registeredClient: ClientDto = response.data;
     
             if (companyRelation.length > 0) {
-                await http.put(`authenticated/clients/${registeredClient.id}/companies`, {
+                await http.put(`authenticated/clients/${registeredClient.id}/authenticated/company`, {
                     company: companyRelation,
                 });
                 console.log('Companies added successfully.');

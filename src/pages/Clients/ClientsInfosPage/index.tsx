@@ -57,7 +57,7 @@ export function ClientsInfosPage() {
 
     async function getAllClients() {
         try {
-            const response = await http.get('clients');
+            const response = await http.get('authenticated/clients');
             setAllClients(response.data);
         } catch (error) {
             console.error(error);
@@ -155,7 +155,7 @@ function ClientsData({ data }: { data: DataType[] }) {
 
     async function handleDelete(id: string) {
         try {
-            await http.delete(`clients/${id}`);
+            await http.delete(`authenticated/clients/${id}`);
             message.success('Cliente removido com sucesso!');
         } catch (error) {
             console.error(error);
@@ -165,7 +165,7 @@ function ClientsData({ data }: { data: DataType[] }) {
 
     async function handleStatus(id: string) {
         try {
-            await http.put('clients', {
+            await http.put(`authenticated/clients/${id}`, {
                 id: id,
                 status: true,
             });
