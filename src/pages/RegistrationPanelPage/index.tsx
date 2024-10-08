@@ -30,7 +30,7 @@ export function RegistrationPanelPage(){
                                <Button
                             className='flex items-center gap-4 justify-center h-[55px] px-2'
                             onClick={() => {
-                                navigate('/infos-services');
+                                navigate('/register-info');
                             }}
                         >
                             <Briefcase className='hidden md:inline-flex' />

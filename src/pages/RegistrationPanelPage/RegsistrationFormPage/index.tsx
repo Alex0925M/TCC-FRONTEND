@@ -11,13 +11,13 @@ import { useEffect, useState } from 'react';
 import { useNavigate, useParams } from 'react-router';
 import { JobDto, createJobFormSchema } from '../../../constants/Jobs';
 
-// Define os tipos para clients, employes e interns
+// Define os tipos para clients, employees e interns
 type Client = {
     id: string;
     name: string;
 };
 
-type Employe = {
+type Employee = {
     id: string;
     name: string;
 };
@@ -37,7 +37,7 @@ export function RegistrationFormPage() {
         clientId: '',
     });
     const [clients, setClients] = useState<Client[]>([]);
-    const [employes, setEmployes] = useState<Employe[]>([]);
+    const [employees, setEmployees] = useState<Employee[]>([]);
     const [interns, setInterns] = useState<Intern[]>([]);
     const navigate = useNavigate();
     const { id } = useParams();
@@ -63,7 +63,7 @@ export function RegistrationFormPage() {
                 id: job.id,
                 serviceType: job.serviceType,
                 employeId: job.employe?.id || '', // Ajuste para employeId
-                internId: job.intern?.id || '',   // Ajuste para internId
+                internId: job.intern?.id || '', // Ajuste para internId
                 active: job.active,
                 clientId: job.clients[0]?.id || '', // Assume cliente único para simplicidade
             });
@@ -90,10 +90,10 @@ export function RegistrationFormPage() {
         }
     }
 
-    async function fetchEmployes() {
+    async function fetchEmployees() {
         try {
             const response = await http.get('/employees');
-            setEmployes(response.data);
+            setEmployees(response.data);
         } catch (error) {
             console.error(error);
         }
@@ -101,7 +101,7 @@ export function RegistrationFormPage() {
 
     async function fetchInterns() {
         try {
-            const response = await http.get('authenticated/interns');
+            const response = await http.get('authenticated/intern');
             setInterns(response.data);
         } catch (error) {
             console.error(error);
@@ -115,7 +115,7 @@ export function RegistrationFormPage() {
                 id: data.id,
                 serviceType: data.serviceType,
                 employe: data.employeId ? { id: data.employeId, name: '' } : undefined, // Inclua o nome do empregado se necessário
-                intern: data.internId ? { id: data.internId, name: '' } : undefined,   // Inclua o nome do estagiário se necessário
+                intern: data.internId ? { id: data.internId, name: '' } : undefined, // Inclua o nome do estagiário se necessário
                 active: data.active,
                 clients: data.clientId ? [data.clientId] : [], // Ajuste para a lista de IDs dos clientes
             };
@@ -137,7 +137,7 @@ export function RegistrationFormPage() {
             fetchJobData(id);
         }
         fetchClients();
-        fetchEmployes();
+        fetchEmployees();
         fetchInterns(); // Busque interns quando o componente for montado
     }, [id]);
 
@@ -149,17 +149,8 @@ export function RegistrationFormPage() {
                 onSubmit={handleSubmit(onSubmit)}
                 className='flex flex-col justify-center gap-16'
             >
-                <FormContainer title='Dados do Job'>
+                <FormContainer title='Dados do Atendimento'>
                     <FormBox>
-                        <Input
-                            name='id'
-                            control={control}
-                            label='ID'
-                            errors={errors.id}
-                            autoComplete='off'
-                            placeholder='ID do job (opcional)'
-                        />
-
                         <Input
                             name='serviceType'
                             control={control}
@@ -179,9 +170,9 @@ export function RegistrationFormPage() {
                                 className='mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:border-indigo-500 focus:ring focus:ring-indigo-500 focus:ring-opacity-50'
                             >
                                 <option value=''>Selecione um funcionário</option>
-                                {employes.map(employe => (
-                                    <option key={employe.id} value={employe.id}>
-                                        {employe.name}
+                                {employees.map(employee => (
+                                    <option key={employee.id} value={employee.id}>
+                                        {employee.name}
                                     </option>
                                 ))}
                             </select>

@@ -11,6 +11,10 @@ import { CompaniesInfosPage } from "./pages/Companies/CompaniesInfosPage";
 import { EmployeesInfosPage } from "./pages/Employees/EmployeesInfosPage";
 import { RegistrationPanelPage } from "./pages/RegistrationPanelPage";
 import { RegistrationFormPage } from "./pages/RegistrationPanelPage/RegsistrationFormPage";
+import { InternFormPage } from "./pages/Interns/InternRegistrationPage";
+import { InternsInfosPage } from "./pages/Interns/InternRegistrationPage/InterInfoPage";
+import { JobsInfosPage } from "./pages/RegistrationPanelPage/RegistrationInfoPage";
+
 
 export function AppRoutes() {
     return (
@@ -31,6 +35,10 @@ export function AppRoutes() {
                     <Route path='/infos-company/edit/:id' element={<CompanyFormPage />}/>
                     <Route path='/registration-panel' element={<RegistrationPanelPage />}/>
                     <Route path='/register-service' element={<RegistrationFormPage />}/>
+                    <Route path='/register-intern' element={<InternFormPage />}/>
+                    <Route path='/infos-interns' element={<InternsInfosPage />}/>
+                    <Route path='/register-info' element={<JobsInfosPage />}/>
+                    
                 </Route>
             </Routes>
         </BrowserRouter>

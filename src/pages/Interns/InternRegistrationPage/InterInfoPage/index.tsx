@@ -1,10 +1,10 @@
-import { http } from '../../../service/http';
-import { Title } from '../../../components/Title';
+import { http } from '../../../../service/http';
+import { Title } from '../../../../components/Title';
 import { v4 as UUID } from 'uuid';
 import { useNavigate } from 'react-router';
-import { PageContainer } from '../../../components/PageContainer';
+import { PageContainer } from '../../../../components/PageContainer';
 import { SearchOutlined } from '@ant-design/icons';
-import { Button as MyButton } from '../../../components/Button';
+import { Button as MyButtom } from '../../../../components/Button';
 import type { FilterConfirmProps } from 'antd/es/table/interface';
 import type { InputRef } from 'antd';
 import { useEffect, useRef, useState } from 'react';
@@ -22,14 +22,12 @@ import {
     ArchiveRestore,
 } from 'lucide-react';
 
-type ShowEmployees = {
+type ShowInterns = {
     id: string;
     name: string;
     cpf: string;
     email: string;
-    phone: string;
-    birth: string;
-    status: boolean;
+    ativo: boolean;
 };
 
 interface DataType {
@@ -38,50 +36,45 @@ interface DataType {
     name: string;
     cpf: string;
     email: string;
-    phone: string;
-    birth: string;
-    status: string;
+    ativo: string;
 }
 
-export function EmployeesInfosPage() {
-    const [allEmployees, setAllEmployees] = useState<ShowEmployees[]>([]);
+export function InternsInfosPage() {
+    const [allInterns, setAllInterns] = useState<ShowInterns[]>([]);
     const [onlyActive, setOnlyActive] = useState<boolean>(true);
     const navigate = useNavigate();
 
-    async function getAllEmployees() {
+    async function getAllInterns() {
         try {
-            const response = await http.get('employees');
-            setAllEmployees(response.data);
+            const response = await http.get('authenticated/intern');
+            setAllInterns(response.data);
         } catch (error) {
             console.error(error);
         }
     }
 
-    const employeesData: DataType[] = allEmployees.map((c: ShowEmployees) => {
-        let date = new Date(c.birth).toLocaleDateString('pt-BR');
+    const internsData: DataType[] = allInterns.map((c: ShowInterns) => {
         return {
             key: UUID(),
             id: c.id,
             name: c.name,
             cpf: c.cpf,
             email: c.email,
-            phone: c.phone,
-            birth: date,
-            status: c.status ? 'Ativo' : 'Inativo',
+            ativo: c.ativo ? 'Ativo' : 'Inativo',
         };
     });
 
-    const activeEmployeesData: DataType[] = employeesData.filter(
-        (c: DataType) => c.status === 'Ativo'
+    const activeInternsData: DataType[] = internsData.filter(
+        (c: DataType) => c.ativo === 'Ativo'
     );
 
     useEffect(() => {
-        getAllEmployees();
+        getAllInterns();
     }, []);
 
     return (
         <PageContainer>
-            <Title>Funcionários</Title>
+            <Title>Estagiários</Title>
             <div className='flex items-center justify-between w-[280px]'>
                 <Button
                     onClick={() => {
@@ -110,33 +103,34 @@ export function EmployeesInfosPage() {
                 </Button>
             </div>
 
-            <EmployeeData
-                data={onlyActive ? activeEmployeesData : employeesData}
+            <InternData
+                data={onlyActive ? activeInternsData : internsData}
+                refreshData={getAllInterns}
             />
 
             <div className='flex flex-col sm:flex-row items-center justify-center w-full gap-10 sm:gap-28'>
-                <MyButton
+                <MyButtom
                     className='flex items-center gap-2 w-fit px-4 py-1.5'
                     variant='secondary'
                     onClick={() => navigate(-1)}
                 >
                     <ArrowLeft size={20} />
                     Voltar
-                </MyButton>
+                </MyButtom>
 
-                <MyButton
+                <MyButtom
                     className='flex items-center gap-2 w-fit px-4 py-1.5'
-                    onClick={() => navigate('/register-employee')}
+                    onClick={() => navigate('/register-intern')}
                 >
                     <PlusIcon size={20} />
                     Novo
-                </MyButton>
+                </MyButtom>
             </div>
         </PageContainer>
     );
 }
 
-function EmployeeData({ data }: { data: DataType[] }) {
+function InternData({ data, refreshData }: { data: DataType[], refreshData: () => void }) {
     const searchInput = useRef<InputRef>(null);
     const navigate = useNavigate();
 
@@ -150,22 +144,32 @@ function EmployeeData({ data }: { data: DataType[] }) {
 
     async function handleDelete(id: string) {
         try {
-            const response = await http.delete(`employees/${id}`);
-            console.log('handleDelete: ', response.data);
-            message.success('Funcionário removido com sucesso!');
+            const response = await http.put(`authenticated/intern/${id}`, {
+                ativo: false,
+            });
+            if (response.status === 200) {
+                message.success('Estagiário desativado com sucesso!');
+                await refreshData(); // Aguarde a atualização da lista de estagiários após a desativação
+            } else {
+                message.error('Falha ao desativar o estagiário!');
+            }
         } catch (error) {
             console.error(error);
             message.error('Algo deu errado!');
         }
     }
-
+    
     async function handleStatus(id: string) {
         try {
-            await http.put('employees', {
-                id: id,
-                status: true,
+            const response = await http.put(`authenticated/intern/${id}`, {
+                ativo: true,
             });
-            message.success('Funcionário ativado com sucesso!');
+            if (response.status === 200) {
+                message.success('Estagiário ativado com sucesso!');
+                await refreshData(); // Aguarde a atualização da lista de estagiários após a ativação
+            } else {
+                message.error('Falha ao ativar o estagiário!');
+            }
         } catch (error) {
             console.error(error);
             message.error('Algo deu errado!');
@@ -231,7 +235,7 @@ function EmployeeData({ data }: { data: DataType[] }) {
             title: 'Nome',
             dataIndex: 'name',
             key: 'name',
-            width: '20%',
+            width: '30%',
             ...getColumnSearchProps('name'),
         },
         {
@@ -245,56 +249,39 @@ function EmployeeData({ data }: { data: DataType[] }) {
             title: 'Email',
             dataIndex: 'email',
             key: 'email',
-            width: '15%',
+            width: '30%',
             ...getColumnSearchProps('email'),
-        },
-        {
-            title: 'Contato',
-            dataIndex: 'phone',
-            key: 'phone',
-            width: '15%',
-            ...getColumnSearchProps('phone'),
-        },
-        {
-            title: 'Nascimento',
-            dataIndex: 'birth',
-            key: 'birth',
-            width: '15%',
-            ...getColumnSearchProps('birth'),
-            sorter: (a, b) =>
-                Number(a.birth.slice(0, 2)) - Number(b.birth.slice(0, 2)),
-            sortDirections: ['descend', 'ascend'],
         },
         {
             className: 'hidden sm:inline-flex',
             title: 'Status',
-            dataIndex: 'status',
-            key: 'status',
-            width: '5%',
-            ...getColumnSearchProps('status'),
+            dataIndex: 'ativo',
+            key: 'ativo',
+            width: '10%',
+            ...getColumnSearchProps('ativo'),
             render: (_, record) => (
                 <strong
                     className={`${
-                        record.status === 'Ativo'
+                        record.ativo === 'Ativo'
                             ? 'text-blue-primary'
                             : 'text-blue-background'
                     } uppercase`}
                 >
-                    {record.status}
+                    {record.ativo}
                 </strong>
             ),
         },
         {
             title: 'Ações',
             key: 'actions',
-            width: '5%',
+            width: '10%',
             render: (_, record) => {
                 const menu = (
                     <Menu>
                         <Menu.Item key="edit">
                             <Button
                                 className='flex items-center justify-center gap-2 w-full capitalize font-semibold'
-                                onClick={() => navigate(`/infos-employee/edit/${record.id}`)}
+                                onClick={() => navigate(`/infos-intern/edit/${record.id}`)}
                             >
                                 <Edit size={18} />
                                 Editar
@@ -310,7 +297,7 @@ function EmployeeData({ data }: { data: DataType[] }) {
                             </Button>
                         </Menu.Item>
                         <Menu.Item key="delete">
-                            {record.status === 'Ativo' ? (
+                            {record.ativo === 'Ativo' ? (
                                 <DeletePopup onDelete={() => handleDelete(record.id)} />
                             ) : (
                                 <ActivePopup onActive={() => handleStatus(record.id)} />
@@ -349,10 +336,10 @@ function DeletePopup({
     return (
         <Popconfirm
             className='flex items-center justify-center gap-2 w-full select-none'
-            title='Excluir funcionário?'
+            title='Desativar estagiário?'
             placement='left'
-            description='Tem certeza que deseja exlcuir este funcionário?'
-            okText='Excluir'
+            description='Tem certeza que deseja desativar este estagiário?'
+            okText='Desativar'
             okType='danger'
             cancelText='Voltar'
             onCancel={() => {}}
@@ -360,7 +347,7 @@ function DeletePopup({
         >
             <Button type='primary' danger>
                 <Trash2 size={18} />
-                Excluir
+                Desativar
             </Button>
         </Popconfirm>
     );
@@ -376,9 +363,9 @@ function ActivePopup({
     return (
         <Popconfirm
             className='flex items-center justify-center gap-2 w-full select-none'
-            title='Ativar funcionário?'
+            title='Ativar estagiário?'
             placement='left'
-            description='Deseja reativar este funcionário?'
+            description='Deseja reativar este estagiário?'
             okText='Ativar'
             okType='default'
             cancelText='Voltar'

@@ -78,3 +78,4 @@ const AntdTable = ({ dataSource, pagination, companyRelation }: TableProps) => {
 };
 
 export default AntdTable;
+
