@@ -7,7 +7,6 @@ import { useNavigate } from 'react-router-dom';
 // Define o componente AntdDropdown
 const AntdDropdown = ({
     title,
-    options,
     className,
 }: {
     title: string;

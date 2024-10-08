@@ -1,6 +1,6 @@
 import { SidebarItem } from "./SidebarItem";
 import { SidebarSection } from "./SidebarSection";
-import { BarChart, BarChart2, GitGraph, Home, MessageCircle, Shield, User } from 'lucide-react';
+import { BarChart2,  Home, MessageCircle, Shield, User } from 'lucide-react';
 
 export function Sidebar() {
     const whatsappNumber = "5518997254605"; 
